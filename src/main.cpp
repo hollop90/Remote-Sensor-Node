@@ -39,16 +39,25 @@
 // Vatiables
 ClosedCube_HDC1080 hdc1080;
 uint8_t LED_PIN = A0;
+static uint8_t mydata[4];
 
 // Function Declarations
 void onEvent (ev_t ev);
 
-void initJob(osjob_t* j);
+void initFunc(osjob_t* j);
 void wakeUp(osjob_t* j);
 void readSensor(osjob_t* j);
 void logData(osjob_t* j);
 void do_send(osjob_t* j);
 void sleep(osjob_t* j);
+
+// jobs
+static osjob_t initJob;
+static osjob_t wakeJob;
+static osjob_t readJob;
+static osjob_t logJob;
+static osjob_t sendjob;
+static osjob_t sleepJob;
 
 void setupChannelsEU868();
 
@@ -60,12 +69,10 @@ static const u1_t PROGMEM APPSKEY[16] = { 0x59, 0x45, 0x55, 0xE0, 0xA6, 0x40, 0x
 
 // LoRaWAN end-device address MSB first
 static const u4_t DEVADDR = 0x260B540A ; // <-- Change this address for every node!
-static uint8_t mydata[2];
-static osjob_t sendjob;
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 15;
+const unsigned TX_INTERVAL = 60;
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
@@ -77,7 +84,7 @@ const lmic_pinmap lmic_pins = {
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);
-    hdc1080.begin(0x40);    
+    //hdc1080.begin(0x40);
     Serial.begin(115200);
     delay(100);     // per sample code on RF_95 test
     Serial.println(F("Starting"));
@@ -113,13 +120,101 @@ void setup() {
     // Set data rate and transmit power for uplink
     LMIC_setDrTxpow(DR_SF7,20);
 
-    // Start job
-    //initJob emits txcomplete
-    do_send(&sendjob);
+    //  // os time accuracy
+    // Serial.println(os_getTime());
+    // Serial.flush();
+    // LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);
+    // Serial.println(os_getTime());
+    // Serial.flush();
+    // while(1);
+    initFunc(&initJob);
 }
 
 void loop() {
     os_runloop_once();
+}
+
+
+
+
+void initFunc(osjob_t* j){
+    Serial.println("Init Job");
+    Serial.flush();
+    hdc1080.begin(0x40);
+    // initialise periferals
+    // initialise 
+    os_setCallback(&readJob, readSensor);
+}
+
+void wakeUp(osjob_t* j){
+    Serial.println("Wake");
+    Serial.flush();
+}
+
+void readSensor(osjob_t* j){
+    Serial.println("Reading sensor");
+    int senseVal = hdc1080.readHumidity() * 100;
+    mydata[0] = highByte(senseVal);
+    mydata[1] = lowByte(senseVal);
+    
+    senseVal = hdc1080.readTemperature() * 100;
+    mydata[2] = highByte(senseVal);
+    mydata[3] = lowByte(senseVal);
+    os_setTimedCallback(&logJob, sec2osticks(15), logData);
+}
+
+void logData(osjob_t* j){
+    Serial.println("Logging");
+    Serial.flush();
+    os_setCallback(&sendjob, do_send);
+    ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
+}
+
+//The job pointer parameter is not used but it can be used if needed
+void do_send(osjob_t* j){ // The job struct is passed to make sure that the cb calls the correct funtion for this job
+    Serial.println("Sending");
+    Serial.flush();
+    // Check if there is not a current TX/RX job running
+    if (LMIC.opmode & OP_TXRXPEND) {
+        Serial.println(F("OP_TXRXPEND, not sending"));
+    } else {
+        // Read sensors
+        // Log Data 
+        // Prepare upstream data transmission at the next possible time.
+        LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
+        Serial.println(F("Packet queued"));
+    }
+    // Next TX is scheduled after TX_COMPLETE event.
+}
+
+void sleep(osjob_t* j){
+    unsigned long prevtime = millis();
+    unsigned long nowtime = millis();
+    for (int i = 0; i < 3; i++){
+        while (nowtime - prevtime < 1000UL){
+            os_runloop_once();
+            nowtime = millis();
+        }
+        prevtime = nowtime;
+        delay(1000);
+        Serial.print("Delay: ");
+        Serial.println(i);
+        Serial.flush();        
+    }
+    os_setCallback(&readJob, readSensor);
+}
+
+void setupChannelsEU868(){
+    
+   LMIC_setupChannel(0, 868100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI);      // g-band
+//    LMIC_setupChannel(2, 868500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(3, 867100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(4, 867300000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(5, 867500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(6, 867700000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(7, 867900000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(8, 868800000, DR_RANGE_MAP(DR_FSK,  DR_FSK),  BAND_MILLI);      // g2-band
 }
 
 void onEvent (ev_t ev) {
@@ -176,8 +271,8 @@ void onEvent (ev_t ev) {
             }
             
             // Schedule next transmission
-            os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);  
-            //os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), readSensor);
+            ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);  
+            os_setCallback(&sleepJob, sleep);
             
             break;
         case EV_RESET:
@@ -217,37 +312,4 @@ void onEvent (ev_t ev) {
             Serial.println((unsigned) ev);
             break;
     }
-}
-
-//The job pointer parameter is not used but it can be used if needed
-void do_send(osjob_t* j){ // The job struct is passed to make sure that the cb calls the correct funtion for this job
-    // Check if there is not a current TX/RX job running
-    if (LMIC.opmode & OP_TXRXPEND) {
-        Serial.println(F("OP_TXRXPEND, not sending"));
-    } else {
-        // Prepare upstream data transmission at the next possible time.
-        LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
-        Serial.println(F("Packet queued"));
-    }
-    // Next TX is scheduled after TX_COMPLETE event.
-}
-
-void readSensor(osjob_t* j){
-    int senseVal = hdc1080.readHumidity() * 100;
-    mydata[0] = highByte(senseVal);
-    mydata[1] = lowByte(senseVal);
-
-}
-
-void setupChannelsEU868(){
-    
-   LMIC_setupChannel(0, 868100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-//    LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI);      // g-band
-//    LMIC_setupChannel(2, 868500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-//    LMIC_setupChannel(3, 867100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-//    LMIC_setupChannel(4, 867300000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-//    LMIC_setupChannel(5, 867500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-//    LMIC_setupChannel(6, 867700000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-//    LMIC_setupChannel(7, 867900000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-//    LMIC_setupChannel(8, 868800000, DR_RANGE_MAP(DR_FSK,  DR_FSK),  BAND_MILLI);      // g2-band
 }
