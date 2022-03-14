@@ -72,7 +72,7 @@ static const u4_t DEVADDR = 0x260B540A ; // <-- Change this address for every no
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 60;
+const unsigned TX_INTERVAL = 15;
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
@@ -160,14 +160,14 @@ void readSensor(osjob_t* j){
     senseVal = hdc1080.readTemperature() * 100;
     mydata[2] = highByte(senseVal);
     mydata[3] = lowByte(senseVal);
-    os_setTimedCallback(&logJob, sec2osticks(15), logData);
+    os_setCallback(&logJob, logData);
 }
 
 void logData(osjob_t* j){
     Serial.println("Logging");
     Serial.flush();
-    os_setCallback(&sendjob, do_send);
-    ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
+    ////os_setCallback(&sendjob, do_send);
+    os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
 }
 
 //The job pointer parameter is not used but it can be used if needed
