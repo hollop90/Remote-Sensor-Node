@@ -51,7 +51,7 @@ void logData(osjob_t* j);
 void do_send(osjob_t* j);
 void sleep(osjob_t* j);
 
-// jobs
+// Job structs
 static osjob_t initJob;
 static osjob_t wakeJob;
 static osjob_t readJob;
@@ -84,7 +84,6 @@ const lmic_pinmap lmic_pins = {
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);
-    //hdc1080.begin(0x40);
     Serial.begin(115200);
     delay(100);     // per sample code on RF_95 test
     Serial.println(F("Starting"));
@@ -141,8 +140,7 @@ void initFunc(osjob_t* j){
     Serial.println("Init Job");
     Serial.flush();
     hdc1080.begin(0x40);
-    // initialise periferals
-    // initialise 
+
     os_setCallback(&readJob, readSensor);
 }
 
@@ -153,6 +151,7 @@ void wakeUp(osjob_t* j){
 
 void readSensor(osjob_t* j){
     Serial.println("Reading sensor");
+
     int senseVal = hdc1080.readHumidity() * 100;
     mydata[0] = highByte(senseVal);
     mydata[1] = lowByte(senseVal);
@@ -166,8 +165,8 @@ void readSensor(osjob_t* j){
 void logData(osjob_t* j){
     Serial.println("Logging");
     Serial.flush();
-    ////os_setCallback(&sendjob, do_send);
-    os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
+    os_setCallback(&sendjob, do_send);
+    ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
 }
 
 //The job pointer parameter is not used but it can be used if needed
@@ -190,18 +189,18 @@ void do_send(osjob_t* j){ // The job struct is passed to make sure that the cb c
 void sleep(osjob_t* j){
     unsigned long prevtime = millis();
     unsigned long nowtime = millis();
-    for (int i = 0; i < 3; i++){
+    for (int i = 0; i < 30; i++){
         while (nowtime - prevtime < 1000UL){
             os_runloop_once();
             nowtime = millis();
         }
         prevtime = nowtime;
-        delay(1000);
         Serial.print("Delay: ");
         Serial.println(i);
         Serial.flush();        
     }
     os_setCallback(&readJob, readSensor);
+    ////os_setTimedCallback(&readJob, sec2osticks(TX_INTERVAL), readSensor);
 }
 
 void setupChannelsEU868(){
