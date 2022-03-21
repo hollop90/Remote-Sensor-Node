@@ -38,7 +38,7 @@
 
 // Vatiables
 ClosedCube_HDC1080 hdc1080;
-uint8_t LED_PIN = A0;
+uint8_t LED_PIN = 8;
 static uint8_t mydata[4];
 
 // Function Declarations
@@ -187,18 +187,20 @@ void do_send(osjob_t* j){ // The job struct is passed to make sure that the cb c
 }
 
 void sleep(osjob_t* j){
-    unsigned long prevtime = millis();
-    unsigned long nowtime = millis();
-    for (int i = 0; i < 30; i++){
-        while (nowtime - prevtime < 1000UL){
-            os_runloop_once();
-            nowtime = millis();
-        }
-        prevtime = nowtime;
-        Serial.print("Delay: ");
-        Serial.println(i);
-        Serial.flush();        
-    }
+    // // unsigned long prevtime = millis();
+    // // unsigned long nowtime = millis();
+    // // for (int i = 0; i < 30; i++){
+    // //     while (nowtime - prevtime < 1000UL){
+    // //         os_runloop_once();
+    // //         nowtime = millis();
+    // //     }
+    // //     prevtime = nowtime;
+    // //     Serial.print("Delay: ");
+    // //     Serial.println(i);
+    // //     Serial.flush();        
+    // // }
+    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+    delay(10000);
     os_setCallback(&readJob, readSensor);
     ////os_setTimedCallback(&readJob, sec2osticks(TX_INTERVAL), readSensor);
 }
@@ -271,6 +273,9 @@ void onEvent (ev_t ev) {
             
             // Schedule next transmission
             ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);  
+            digitalWrite(LED_PIN, HIGH);
+            delay(50);
+            digitalWrite(LED_PIN, LOW);
             os_setCallback(&sleepJob, sleep);
             
             break;
