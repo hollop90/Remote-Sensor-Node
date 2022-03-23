@@ -35,8 +35,10 @@
 #include <SPI.h>
 #include <LowPower.h>
 #include <ClosedCube_HDC1080.h>
+#include <Melopero_RV3028.h>
 
-// Vatiables
+// Variables
+Melopero_RV3028 rtc;
 ClosedCube_HDC1080 hdc1080;
 uint8_t LED_PIN = 8;
 static uint8_t mydata[4];
@@ -84,10 +86,20 @@ const lmic_pinmap lmic_pins = {
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);
+    Wire.begin();
     Serial.begin(115200);
     delay(100);     // per sample code on RF_95 test
     Serial.println(F("Starting"));
-
+    
+    // //     rtc.initI2C();
+    // //     rtc.set24HourMode();
+    // //     rtc.setTime(2022, 3, 2, 21, 0, 30, 0);
+    // // while (1)
+    // // {
+    // //     Serial.println(rtc.getUnixTime());
+    // //     delay(100);
+    // // }
+    
     // LMIC init
     os_init();
     // Reset the MAC state. Session and pending data transfers will be discarded.
@@ -140,6 +152,13 @@ void initFunc(osjob_t* j){
     Serial.println("Init Job");
     Serial.flush();
     hdc1080.begin(0x40);
+    rtc.initI2C();
+    // Set the device to use the 24hour format (default) instead of the 12 hour format
+  rtc.set24HourMode();
+
+  // Set the date and time:
+  rtc.setTime(2020, 9, 3, 30, 15, 20, 0);
+
 
     os_setCallback(&readJob, readSensor);
 }
