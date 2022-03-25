@@ -85,6 +85,8 @@ const lmic_pinmap lmic_pins = {
 };
 
 void setup() {
+    CLKPR = 0x80; // (1000 0000) enable change in clock frequency
+    CLKPR = 0x01; // (0000 0001) use clock division factor 2 to reduce the frequency from 16 MHz to 8 MHz
     pinMode(LED_PIN, OUTPUT);
     Wire.begin();
     Serial.begin(115200);
@@ -149,6 +151,13 @@ void loop() {
 
 
 void initFunc(osjob_t* j){
+    digitalWrite(LED_PIN, HIGH);
+    delay(10);
+    digitalWrite(LED_PIN, LOW);
+    delay(5);
+    digitalWrite(LED_PIN, HIGH);
+    delay(10);
+    digitalWrite(LED_PIN, LOW);
     Serial.println("Init Job");
     Serial.flush();
     hdc1080.begin(0x40);
@@ -219,7 +228,7 @@ void sleep(osjob_t* j){
     // //     Serial.flush();        
     // // }
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-    delay(10000);
+    delay(500);
     os_setCallback(&readJob, readSensor);
     ////os_setTimedCallback(&readJob, sec2osticks(TX_INTERVAL), readSensor);
 }
@@ -227,6 +236,14 @@ void sleep(osjob_t* j){
 void setupChannelsEU868(){
     
    LMIC_setupChannel(0, 868100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+   LMIC_disableChannel(1);
+   LMIC_disableChannel(2);
+   LMIC_disableChannel(3);
+   LMIC_disableChannel(4);
+   LMIC_disableChannel(5);
+   LMIC_disableChannel(6);
+   LMIC_disableChannel(7);
+   LMIC_disableChannel(8);
 //    LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI);      // g-band
 //    LMIC_setupChannel(2, 868500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
 //    LMIC_setupChannel(3, 867100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
