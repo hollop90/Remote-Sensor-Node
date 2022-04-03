@@ -1,3 +1,5 @@
+#include "Arduino.h"
+
 /*******************************************************************************
  * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
  * Copyright (c) 2018 Terry Moore, MCCI
@@ -33,20 +35,21 @@
 #include <lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
+#include <Wire.h>
 #include <LowPower.h>
 #include <ClosedCube_HDC1080.h>
-#include <Melopero_RV3028.h>
+#include <SdFat.h>
+#include <RV3028C7.h>
 
 // Variables
-Melopero_RV3028 rtc;
+RV3028C7 rtc;
 ClosedCube_HDC1080 hdc1080;
 uint8_t LED_PIN = 8;
 static uint8_t mydata[4];
-;
+
 
 // Function Declarations
 void onEvent (ev_t ev);
-
 void initFunc(osjob_t* j);
 void wakeUp(osjob_t* j);
 void readSensor(osjob_t* j);
@@ -85,6 +88,11 @@ const lmic_pinmap lmic_pins = {
     .dio = {2, 6, LMIC_UNUSED_PIN}, 
 };
 
+void wakeUp()
+{
+    // Just a handler for the pin interrupt.
+}
+
 void setup() {
     CLKPR = 0x80; // (1000 0000) enable change in clock frequency
     CLKPR = 0x01; // (0000 0001) use clock division factor 2 to reduce the frequency from 16 MHz to 8 MHz
@@ -92,12 +100,9 @@ void setup() {
     Wire.begin();
     Serial.begin(115200);
     delay(100);     // per sample code on RF_95 test
-    Serial.println(F("Starting"));
+    Serial.println(F("Starting Sensor Node"));
     
-        rtc.initI2C();
-        rtc.set24HourMode();
-        rtc.setTime(2022, 3, 2, 21, 0, 30, 0);
-    
+    rtc.begin();
     // LMIC init
     os_init();
     // Reset the MAC state. Session and pending data transfers will be discarded.
@@ -128,14 +133,7 @@ void setup() {
 
     // Set data rate and transmit power for uplink
     LMIC_setDrTxpow(DR_SF7,20);
-
-    //  // os time accuracy
-    // Serial.println(os_getTime());
-    // Serial.flush();
-    // LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);
-    // Serial.println(os_getTime());
-    // Serial.flush();
-    // while(1);
+    
     initFunc(&initJob);
 }
 
@@ -157,13 +155,6 @@ void initFunc(osjob_t* j){
     Serial.println("Init Job");
     Serial.flush();
     hdc1080.begin(0x40);
-    rtc.initI2C();
-    // Set the device to use the 24hour format (default) instead of the 12 hour format
-  rtc.set24HourMode();
-
-  // Set the date and time:
-  rtc.setTime(2020, 9, 3, 30, 15, 20, 0);
-
 
     os_setCallback(&readJob, readSensor);
 }
@@ -223,8 +214,20 @@ void sleep(osjob_t* j){
     // //     Serial.println(i);
     // //     Serial.flush();        
     // // }
-    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-    delay(500);
+    attachInterrupt(digitalPinToInterrupt(3), wakeUp, FALLING);
+    Serial.println("Going to sleep...");
+    Serial.flush();
+    rtc.setPeriodicCountdownTimer(10, TIMER_1HZ);
+    rtc.startPeriodicCountdownTimer();
+    rtc.enableInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
+    LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
+
+    Serial.println("Waking up!!!");
+    Serial.flush();
+    rtc.stopPeriodicCountdownTimer();
+    rtc.disableInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
+    detachInterrupt(digitalPinToInterrupt(3));
+    
     os_setCallback(&readJob, readSensor);
     ////os_setTimedCallback(&readJob, sec2osticks(TX_INTERVAL), readSensor);
 }
