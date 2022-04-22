@@ -38,7 +38,6 @@
 #include <Wire.h>
 #include <LowPower.h>
 #include <ClosedCube_HDC1080.h>
-#include <SdFat.h>
 #include <RV3028C7.h>
 
 // Variables
@@ -85,7 +84,7 @@ const lmic_pinmap lmic_pins = {
     .nss = 10,                       // chip select on feather (rf95module) CS
     .rxtx = LMIC_UNUSED_PIN,
     .rst = 9,                       // reset pin
-    .dio = {2, 6, LMIC_UNUSED_PIN}, 
+    .dio = {15, 6, LMIC_UNUSED_PIN}, 
 };
 
 void wakeUp()
@@ -214,19 +213,20 @@ void sleep(osjob_t* j){
     // //     Serial.println(i);
     // //     Serial.flush();        
     // // }
-    attachInterrupt(digitalPinToInterrupt(3), wakeUp, FALLING);
+    attachInterrupt(digitalPinToInterrupt(2), wakeUp, FALLING);
     Serial.println("Going to sleep...");
     Serial.flush();
     rtc.setPeriodicCountdownTimer(10, TIMER_1HZ);
-    rtc.startPeriodicCountdownTimer();
     rtc.enableInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
+    rtc.startPeriodicCountdownTimer();
     LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
 
     Serial.println("Waking up!!!");
     Serial.flush();
     rtc.stopPeriodicCountdownTimer();
+    rtc.clearInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
     rtc.disableInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
-    detachInterrupt(digitalPinToInterrupt(3));
+    detachInterrupt(digitalPinToInterrupt(2));
     
     os_setCallback(&readJob, readSensor);
     ////os_setTimedCallback(&readJob, sec2osticks(TX_INTERVAL), readSensor);
@@ -235,22 +235,24 @@ void sleep(osjob_t* j){
 void setupChannelsEU868(){
     
    LMIC_setupChannel(0, 868100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-   /* LMIC_disableChannel(1);
+   
+//    LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI);      // g-band
+//    LMIC_setupChannel(2, 868500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(3, 867100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(4, 867300000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(5, 867500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(6, 867700000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(7, 867900000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
+//    LMIC_setupChannel(8, 868800000, DR_RANGE_MAP(DR_FSK,  DR_FSK),  BAND_MILLI);      // g2-band
+   
+   LMIC_disableChannel(1);
    LMIC_disableChannel(2);
    LMIC_disableChannel(3);
    LMIC_disableChannel(4);
    LMIC_disableChannel(5);
    LMIC_disableChannel(6);
    LMIC_disableChannel(7);
-   LMIC_disableChannel(8); */
-   LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI);      // g-band
-   LMIC_setupChannel(2, 868500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-   LMIC_setupChannel(3, 867100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-   LMIC_setupChannel(4, 867300000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-   LMIC_setupChannel(5, 867500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-   LMIC_setupChannel(6, 867700000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-   LMIC_setupChannel(7, 867900000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-   LMIC_setupChannel(8, 868800000, DR_RANGE_MAP(DR_FSK,  DR_FSK),  BAND_MILLI);      // g2-band
+   LMIC_disableChannel(8); 
 }
 
 void onEvent (ev_t ev) {
