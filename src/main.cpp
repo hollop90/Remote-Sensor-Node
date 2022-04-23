@@ -77,7 +77,7 @@ static const u4_t DEVADDR = 0x260B540A ; // <-- Change this address for every no
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 15;
+const unsigned TX_INTERVAL = 600; // 10 minuites
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
@@ -144,13 +144,12 @@ void loop() {
 
 
 void initFunc(osjob_t* j){
-    digitalWrite(LED_PIN, HIGH);
-    delay(10);
-    digitalWrite(LED_PIN, LOW);
-    delay(5);
-    digitalWrite(LED_PIN, HIGH);
-    delay(10);
-    digitalWrite(LED_PIN, LOW);
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(8, HIGH);
+        delay(200);
+        digitalWrite(8, LOW);
+        delay(200);
+    }
     Serial.println("Init Job");
     Serial.flush();
     hdc1080.begin(0x40);
@@ -216,7 +215,7 @@ void sleep(osjob_t* j){
     attachInterrupt(digitalPinToInterrupt(2), wakeUp, FALLING);
     Serial.println("Going to sleep...");
     Serial.flush();
-    rtc.setPeriodicCountdownTimer(10, TIMER_1HZ);
+    rtc.setPeriodicCountdownTimer(TX_INTERVAL, TIMER_1HZ);
     rtc.enableInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
     rtc.startPeriodicCountdownTimer();
     LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
@@ -311,7 +310,7 @@ void onEvent (ev_t ev) {
             // Schedule next transmission
             ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);  
             digitalWrite(LED_PIN, HIGH);
-            delay(50);
+            delay(200);
             digitalWrite(LED_PIN, LOW);
             os_setCallback(&sleepJob, sleep);
             
