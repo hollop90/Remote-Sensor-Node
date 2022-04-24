@@ -1,1 +1,1 @@
-# Remote-Sensor-Node
+# Go to LoraWAN branch instead.
