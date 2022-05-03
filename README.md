@@ -1,6 +1,8 @@
 # Remote-Sensor-Node
 An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This repository contiains the source code, mechanical design files, the electronic schematic and some images of the project.
 
+![test](https://github.com/hollop90/Remote-Sensor-Node/blob/LoraWAN/Images/Sensror%20node%20outdoors.jpg?raw=true)
+
 ## Features
 - 14.5μA sleep current
 - 10 minute transmission interval
