@@ -18,4 +18,4 @@ An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This rep
 [YouTube Playlist](https://www.youtube.com/playlist?list=PLkDD2GJCGW-Zxzu5pHdPQPp9Yhqgw_unU)
 
 ## Live Data
-[Tingspeak]()
+[Tingspeak](https://thingspeak.com/channels/1655776/)
