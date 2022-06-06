@@ -15,7 +15,7 @@ An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This rep
 - Custom PCB
 - Ratiation shield for sensors
 ## Blog
-[Solar Powered Sensor](https://ugo-uzoukwu.blogspot.com/)
+[Solar Powered Sensor](solar-powered-sensor.blogspot.com)
 
 ## Videos
 [YouTube Playlist](https://www.youtube.com/playlist?list=PLkDD2GJCGW-Zxzu5pHdPQPp9Yhqgw_unU)

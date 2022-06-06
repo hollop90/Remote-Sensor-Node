@@ -55,6 +55,8 @@ void do_send(osjob_t* j);
 void sleep(osjob_t* j);
 void setupChannelsEU868();
 
+
+
 // Job structs
 static osjob_t initJob;
 static osjob_t wakeJob;
