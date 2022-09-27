@@ -1,36 +1,4 @@
 #include "Arduino.h"
-/*******************************************************************************
- * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
- * Copyright (c) 2018 Terry Moore, MCCI
- *
- * Permission is hereby granted, free of charge, to anyone
- * obtaining a copy of this document and accompanying files,
- * to do whatever they want with them without any restriction,
- * including, but not limited to, copying, modification and redistribution.
- * NO WARRANTY OF ANY KIND IS PROVIDED.
- *
- * This example sends a valid LoRaWAN packet with payload "Hello,
- * world!", using frequency and encryption settings matching those of
- * the The Things Network.
- *
- * This uses ABP (Activation-by-personalisation), where a DevAddr and
- * Session keys are preconfigured (unlike OTAA, where a DevEUI and
- * application key is configured, while the DevAddr and session keys are
- * assigned/generated in the over-the-air-activation procedure).
- *
- * Note: LoRaWAN per sub-band duty-cycle limitation is enforced (1% in
- * g1, 0.1% in g2), but not the TTN fair usage policy (which is probably
- * violated by this sketch when left running for longer)!
- *
- * To use this sketch, first register your application and device with
- * the things network, to set or generate a DevAddr, NwkSKey and
- * AppSKey. Each device should have their own unique values for these
- * fields.
- *
- * Do not forget to define the radio type correctly in
- * arduino-lmic/project_config/lmic_project_config.h or from your BOARDS.txt.
- *
- *******************************************************************************/
 #include <lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
@@ -143,10 +111,11 @@ void loop() {
 void initFunc(osjob_t* j){
     // Blink on startup
     for (int i = 0; i < 3; i++) {
+        delay(500);
         digitalWrite(8, HIGH);
-        delay(200);
+        delay(100);
         digitalWrite(8, LOW);
-        delay(200);
+        delay(100);
     }
     Serial.println("Init Job");
     Serial.flush();
