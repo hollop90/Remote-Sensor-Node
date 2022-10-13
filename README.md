@@ -1,5 +1,5 @@
 # Remote-Sensor-Node
-An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This repository contiains the source code, mechanical design files, the electronic schematic and some images of the project.
+An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This repository contiains the source code, 3D CAD, the electronic schematic and some images of the project.
 
 ![Sensor Outdoors](./Images/Sensror%20node%20outdoors.jpg)
 
@@ -10,6 +10,9 @@ An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This rep
 
 ![Project Overview](https://github.com/hollop90/Remote-Sensor-Node/blob/LoraWAN/Images/Project%20Overview%203.png?raw=true)
 
+## Setup
+### Using Arduino IDE
+Copy and pase main.cpp into a new arduino project
 ## Planned for V2
 - Battery monitoring
 - Custom PCB
