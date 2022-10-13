@@ -12,7 +12,16 @@ An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This rep
 
 ## Setup
 ### Using Arduino IDE
-Copy and pase main.cpp into a new arduino project
+- Copy and pase main.cpp into a new Arduino project
+- Install the following libraries
+```
+ClosedCube HDC1080
+Low-Power
+MCCI LoRaWAN LMIC library
+RadioHead
+RV-3028-C7
+```
+
 ## Planned for V2
 - Battery monitoring
 - Custom PCB
