@@ -1,14 +1,14 @@
 # Remote-Sensor-Node
 An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This repository contiains the source code, 3D CAD, the electronic schematics and some images of the project.
 
-![Sensor Outdoors](./Images/Sensror%20node%20outdoors.jpg)
+<img src="Images/Sensor%20node%20outdoors.jpg" alt="Sensor node outdoors with solar panel" width="500px"></a>
 
 ## Features
 - 14.5μA sleep current
 - 10 minute transmission interval
 - 6km range achieved to a public gateway from ground level
 
-![Project Overview](https://github.com/hollop90/Remote-Sensor-Node/blob/LoraWAN/Images/Project%20Overview%203.png?raw=true)
+<img src="Images\Project Overview 3.png" alt="Block diagram of project spilt into three main sections. Power, Processing and Networking" width=500></a>
 
 ## Code Setup
 The project firmware can be compiled and uploaded using either the Arduino IDE or PlatofrmIO.
@@ -25,7 +25,11 @@ The project firmware can be compiled and uploaded using either the Arduino IDE o
     RV-3028-C7 (By Macro Yau)
     ```
 - Locate your Arduino sketchbook. It's path can be found in the Arduino IDE preferences menu
-- Navigate to the LMIC project config folder and edit "lmic_project_config.h"(Located in `<SKETCHBOOK_PATH/libraries/MCCI_LoRaWAN_LMIC_library\project_config/lmic_project_config.h`) to match the example below. More configuration info can by found in the [LMIC library documentation](https://github.com/mcci-catena/arduino-lmic)
+- Navigate to the LMIC project config folder and edit "lmic_project_config.h" to match the example **Project Config** below. 
+
+    (Located in `<SKETCHBOOK_DIR/libraries/MCCI_LoRaWAN_LMIC_library\project_config/lmic_project_config.h`)
+
+    More configuration info can by found in the [LMIC library documentation](https://github.com/mcci-catena/arduino-lmic)
 - Select Arduino Pro Mini 8MHz from the tools menu and you are ready to upload
 - Open the serial monitor and set the baud rate to 115000 bps
 
@@ -34,7 +38,9 @@ Clone this repository and download the VS Code editor if you don't have it alrea
 - From VS Code open PIO if not already open
 - From the Home tab of PIO click "Open Project"
 - Select this repository
-- Once open edit this file to meatch the example "Project Config" (Located in `<YOUR_FOLDER>/Remote-Sensor-Node/.pio/libdeps/promini/MCCI LoRaWAN LMIC library/project_config/lmic_project_config.h`)
+- Once open edit this file to match the example **Project Config** 
+
+    (Located in `<REPO_PARENT_DIR>/Remote-Sensor-Node/.pio/libdeps/promini/MCCI LoRaWAN LMIC library/project_config/lmic_project_config.h`)
 - Libraries should be automatically installed
 - On the bottom of the screen hit the arrow pointing right to upload
 - Click on the plug icon to open the serial monitor. Follow the instructions to set the baud rate to 115000 bps
