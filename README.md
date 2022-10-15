@@ -27,7 +27,7 @@ The project firmware can be compiled and uploaded using either the Arduino IDE o
 - Locate your Arduino sketchbook. It's path can be found in the Arduino IDE preferences menu
 - Navigate to the LMIC project config folder and edit "lmic_project_config.h" to match the example **Project Config** below. 
 
-    (Located in `<SKETCHBOOK_DIR/libraries/MCCI_LoRaWAN_LMIC_library\project_config/lmic_project_config.h`)
+    (Located in `<SKETCHBOOK_DIR/libraries/MCCI_LoRaWAN_LMIC_library/project_config/lmic_project_config.h`)
 
     More configuration info can by found in the [LMIC library documentation](https://github.com/mcci-catena/arduino-lmic)
 - Select Arduino Pro Mini 8MHz from the tools menu and you are ready to upload
