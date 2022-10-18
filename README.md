@@ -45,7 +45,8 @@ Clone this repository and download the VS Code editor if you don't have it alrea
 - On the bottom of the screen hit the arrow pointing right to upload
 - Click on the plug icon to open the serial monitor. Follow the instructions to set the baud rate to 115000 bps
 
-**Project Config**
+### Project Config
+
 ```cpp
 // project-specific definitions
 #define CFG_eu868 1 // Select the right config for your region
@@ -58,7 +59,8 @@ Clone this repository and download the VS Code editor if you don't have it alrea
 ```
 
 ## Planned for V2
-- Battery monitoring
+
+- [ ] Battery monitoring
 - Custom PCB
 - Ratiation shield for sensors
 ## Blog
