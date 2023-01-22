@@ -69,11 +69,10 @@ Clone this repository and download the VS Code editor if you don't have it alrea
 
 ## To Do
 
-- [ ] Separate folders for fimware and hardware
-- [ ] **Properly** archive KiCAD and F360 files
+- [X] **Properly** archive KiCAD and F360 files
 - [ ] Git submodules for PCB libs
-- [ ] Battery monitoring
-- [ ] Add STL files for 3D print
+- [X] Battery monitoring
+- [X] Add STL files for 3D print
 - [ ] Make BOM
 - [X] Custom PCB
 - [X] Radiation shield for sensors
