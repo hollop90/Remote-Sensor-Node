@@ -2,6 +2,10 @@
 
 An ultlra-low-power LoRaWAN sensor node based on the MCCI LMIC Library. This repository contiains the source code, 3D CAD, the electronic schematics and some images of the project.
 
+<picture>
+    <img alt="Sensor Node Outdoors" src="Images/Sensor%20node%20outdoors.jpg" width="500px">
+</picture>
+
 <img src="Images/Sensor%20node%20outdoors.jpg" alt="Sensor node outdoors with solar panel" width="500px"></a>
 
 ## Features
@@ -88,3 +92,5 @@ Clone this repository and download the VS Code editor if you don't have it alrea
 ## Live Data
 
 [Tingspeak](https://thingspeak.com/channels/1655776/)
+
+![Sensor Data](https://raw.githubusercontent.com/hollop90/Remote-Sensor-Node/LoraWAN/Images/Sensor%20Data.png "Two graphs and two digits representing humidity and temperature respectively")
