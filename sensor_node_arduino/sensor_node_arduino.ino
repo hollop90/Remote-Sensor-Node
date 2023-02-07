@@ -9,24 +9,20 @@
  * 
  */
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include <lmic.h>
 #include <hal/hal.h>
-#include <SensorNodeDefs.h>
-#include <lmicJobs.h>
-#include "lorawan_secrets.h" // I'm keeping my keys in a separate file, but you can just define them here
+#include "SensorNodeDefs.h"
+#include "lmicJobs.h"
 
-// maybe remove these automatically with a CI?
-#ifndef UGO_KEY_SECRETS
 // LoRaWAN NwkSKey, MSB first
-static const u1_t NWKSKEY[16] = { /*FILL THIS IN*/ };
+static const u1_t NWKSKEY[16] = {};
 
 // LoRaWAN AppSKey, MSB first
-static const u1_t APPSKEY[16] = { /*FILL THIS IN*/ };
+static const u1_t APPSKEY[16] = {};
 
 // LoRaWAN end-device address MSB first
-static const u4_t DEVADDR = /*FILL THIS IN*/; // <-- Change this address for every node!
-#endif
+static const u4_t DEVADDR = 0x0 ; // <-- Change this address for every node!
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
@@ -53,7 +49,7 @@ void setup() {
 
     // Set static session parameters. Instead of dynamically establishing a session
     // by joining the network, precomputed session parameters are be provided.
-    LMIC_setSession (0x13, DEVADDR, const_cast<u1_t*>(NWKSKEY), const_cast<u1_t*>(APPSKEY));
+    LMIC_setSession (0x13, DEVADDR, NWKSKEY, APPSKEY);
     setupChannelsEU868();
 
     // Disable link check validation

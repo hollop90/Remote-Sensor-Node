@@ -20,8 +20,8 @@ The project firmware can be compiled and uploaded using either the Arduino IDE o
 
 ### Using Arduino IDE
 
-- Cloning this repository is not strictly necessary in this case as everything can just be copy pasted
-- Copy and paste the contents of main.cpp into a new Arduino project
+- Arduino IDE files are located in `sensor_node_arduino`
+- Open the file `sensor_node_arduino.ino`
 - Install the following libraries. Make sure to install all dependencies when prompted
 
     ```text

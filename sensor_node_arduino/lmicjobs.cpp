@@ -1,6 +1,6 @@
 /**
  * @file lmicjobs.cpp
- * @author Ugochukwu Uzoukwu 
+ * @author Ugochukwu Uzoukwu
  * @brief Every job to be scheduled by the LMIC
  * @version 0.9
  * @date 2023-02-06
@@ -10,7 +10,7 @@
  */
 
 #include "lmicJobs.h"
-#include <SensorNodeDefs.h>
+#include "SensorNodeDefs.h"
 #include <Arduino.h>
 
 #include <lmic.h>
@@ -28,31 +28,6 @@ osjob_t readJob;
 osjob_t logJob;
 osjob_t sendjob;
 osjob_t sleepJob;
-
-/**
- * ### Job order ###
- * 
- * Power on
- * |
- * V
- * initfunc() 
- * |
- * V
- * readSensor() <-------|
- * |                    |
- * V                    |       
- * logData()            |
- * |                    |
- * V                    |
- * doSend()             |
- * |                    |
- * V                    |
- * EVENT_TX_COMPLETE    |
- * |                    |
- * V                    |
- * sleep()   ---------->|       
- *
- */
 
 void initFunc(osjob_t* j){
     // Blink on startup
