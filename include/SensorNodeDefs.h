@@ -1,3 +1,14 @@
+/**
+ * @file SensorNodeDefs.h
+ * @author Ugochukwu Uzoukwu
+ * @brief Common definitions accross the projct
+ * @version 1.0
+ * @date 2023-02-06
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef UGO_NODE_DEF
 #define UGO_NODE_DEF
 
@@ -18,5 +29,8 @@
 
 // Other
 #define WAKE_INTERVAL   600  // Unit: Seconds
+
+//! Uncommonet to transmit on only 868.1 MHz THIS VIOLATES LORAWAN/TTN REGULATIONS
+#define INDOOR_TESTING
 
 #endif // UGO_NODE_DEF

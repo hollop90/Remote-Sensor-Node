@@ -1,3 +1,14 @@
+/**
+ * @file lmicJobs.h
+ * @author Ugochukwu Uzoukwu
+ * @brief Fucntion and variable declarations
+ * @version 0.9
+ * @date 2023-02-07
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef UGO_LMIC_JOBS
 #define UGO_LMIC_JOBS
 
