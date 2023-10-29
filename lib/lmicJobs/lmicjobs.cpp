@@ -1,12 +1,12 @@
 /**
  * @file lmicjobs.cpp
- * @author Ugochukwu Uzoukwu 
+ * @author Ugochukwu Uzoukwu
  * @brief Every job to be scheduled by the LMIC
  * @version 0.9
  * @date 2023-02-06
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #include "lmicJobs.h"
@@ -31,16 +31,16 @@ osjob_t sleepJob;
 
 /**
  * ### Job order ###
- * 
+ *
  * Power on
  * |
  * V
- * initfunc() 
+ * initfunc()
  * |
  * V
  * readSensor() <-------|
  * |                    |
- * V                    |       
+ * V                    |
  * logData()            |
  * |                    |
  * V                    |
@@ -50,7 +50,7 @@ osjob_t sleepJob;
  * EVENT_TX_COMPLETE    |
  * |                    |
  * V                    |
- * sleep()   ---------->|       
+ * sleep()   ---------->|
  *
  */
 
@@ -86,10 +86,14 @@ void readSensor(osjob_t* j){
     int senseVal = hdc.readHumidity() * 100;
     mydata[0] = highByte(senseVal);
     mydata[1] = lowByte(senseVal);
-    
+    Serial.print("Humidity: ");
+    Serial.println(senseVal/100.0);
+
     senseVal = hdc.readTemperature() * 100;
     mydata[2] = highByte(senseVal);
     mydata[3] = lowByte(senseVal);
+    Serial.print("Temperature: ");
+    Serial.println(senseVal/100.0);
 
     int battVolt = readBattVoltage() * 100;
     Serial.println(battVolt);
@@ -115,7 +119,7 @@ void do_send(osjob_t* j){ // The job struct is passed to make sure that the cb c
         Serial.println(F("OP_TXRXPEND, not sending"));
     } else {
         // Read sensors
-        // Log Data 
+        // Log Data
         // Prepare upstream data transmission at the next possible time.
         LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
         Serial.println(F("Packet queued"));
@@ -125,7 +129,7 @@ void do_send(osjob_t* j){ // The job struct is passed to make sure that the cb c
 
 void sleep(osjob_t* j){
     // Enable sleep timer interrupt and go to sleep
-    
+
     attachInterrupt(digitalPinToInterrupt(3), wakeUp, FALLING);
     Serial.println("Going to sleep...");
     Serial.flush();
@@ -140,7 +144,7 @@ void sleep(osjob_t* j){
     rtc.clearInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
     rtc.disableInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
     detachInterrupt(digitalPinToInterrupt(3));
-    
+
     os_setCallback(&readJob, readSensor);
 }
 
@@ -151,15 +155,15 @@ double readBattVoltage(){
     delay(5);
     digitalWrite(BATT_CTRL, LOW);
     //char buff[50];
-    double rescaledVolt = (adcReading * 0.003222656)/0.8; // Magic values are ADC Volt/LSB (@3.3V) and voltage diveder factor
     //sprintf(buff, "ADC: %d \t Volt: %f", adcReading, rescaledVolt);
+    double rescaledVolt = (adcReading * 0.003222656)/0.8; // Magic values are ADC Volt/LSB (@3.3V) and voltage diveder factor
     Serial.println(rescaledVolt);
     return rescaledVolt;
 }
 
 void wakeUp(){}
 
-void setupChannelsEU868(){    
+void setupChannelsEU868(){
     LMIC_setupChannel(0, 868100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
     #ifndef INDOOR_TESTING
         LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI);      // g-band
@@ -180,7 +184,7 @@ void setupChannelsEU868(){
         LMIC_disableChannel(5);
         LMIC_disableChannel(6);
         LMIC_disableChannel(7);
-        LMIC_disableChannel(8); 
+        LMIC_disableChannel(8);
     #endif
 }
 
@@ -199,7 +203,7 @@ void onEvent (ev_t ev) {
             break;
         case EV_BEACON_TRACKED:
             Serial.println(F("EV_BEACON_TRACKED"));
-            break;            
+            break;
         case EV_LOST_TSYNC:
             Serial.println(F("EV_LOST_TSYNC"));
             break;
@@ -209,14 +213,14 @@ void onEvent (ev_t ev) {
         case EV_JOINED:
             Serial.println(F("EV_JOINED"));
             break;
-        
+
         || This event is defined but not used in the code. No
         || point in wasting codespace on it.
         ||
         || case EV_RFU1:
         ||     Serial.println(F("EV_RFU1"));
         ||     break;
-        
+
         case EV_JOIN_FAILED:
             Serial.println(F("EV_JOIN_FAILED"));
             break;
@@ -236,14 +240,14 @@ void onEvent (ev_t ev) {
               Serial.println(LMIC.dataLen);
               Serial.println(F(" bytes of payload"));
             }
-            
+
             // Schedule next transmission
-            ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);  
+            ////os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
             digitalWrite(LED_G, HIGH);
             delay(200);
             digitalWrite(LED_G, LOW);
             os_setCallback(&sleepJob, sleep);
-            
+
             break;
         case EV_RESET:
             Serial.println(F("EV_RESET"));
